@@ -1,6 +1,0 @@
-Base path: 'D:/Hs_2300/Tools/unity/Editor/f1c1_editor/Editor/Data', plugins path 'D:/Hs_2300/Tools/unity/Editor/f1c1_editor/Editor/Data/PlaybackEngines'
-Cmd: initializeCompiler
-
-Unhandled exception: Protocol error - failed to read magic number. Error code 0x80000004 (Not connected). (transferred 0/4)
-
-Quitting shader compiler process
