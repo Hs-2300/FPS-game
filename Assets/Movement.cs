@@ -1,11 +1,11 @@
-using UnityEngine;
+using UnityEngine;//提供输入、向量和物理相关类型
 
 public class Movement : MonoBehaviour
 {
-    public float walkSpeed = 4f;
-    public float maxVelocityChange = 10f;
+    public float walkSpeed = 4f;//默认速度
+    public float maxVelocityChange = 10f;//每次物理更新中，X,Z允许的最大速度变化
 
-    private Vector2 input;
+    private Vector2 input;  //保存最近一次输入的移动
     private Rigidbody rb;
 
     // Start is called before the first frame update
@@ -17,12 +17,16 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        input = new Vector2(x:Input.GetAxisRaw("Horizontal"), y:Input.GetAxisRaw("Vertical"));
-        input.Normalize();
+        //GetAxisRaw() 读取未经平滑处理的轴值，按键响应更直接。
+        input = new Vector2
+        (x:Input.GetAxisRaw("Horizontal"),  //水平轴, A/D
+        y:Input.GetAxisRaw("Vertical"));    //竖直轴, W/S
+
+        input.Normalize();//长度归一化为1
 
     }
 
-    void FixedUpdate()//Called by Unity everytime there is a physics Update
+    void FixedUpdate()//Called by Unity everytime there is a physics Update, 固定步长
     {
         rb.AddForce(CalculateMovement(walkSpeed), ForceMode.VelocityChange);
     }
@@ -36,7 +40,7 @@ public class Movement : MonoBehaviour
 
         Vector3 velocity= rb.velocity;
 
-        if (input.magnitude > 0.5f)
+        if (input.magnitude > 0.5f)//移动条件
         {
             Vector3 velocityChange = targetVelocity - velocity;
 
