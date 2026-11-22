@@ -34,7 +34,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
         roomOptions:null,
         typedLobby:null);
 
-        Debug.Log(message:"We are connected and in a room now.");
+        Debug.Log(message:"We are in the lobby.");
     }
     public override void OnJoinedRoom()
     {
