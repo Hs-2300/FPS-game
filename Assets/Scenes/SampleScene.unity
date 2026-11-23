@@ -399,6 +399,10 @@ PrefabInstance:
       propertyPath: IsLocalPlayer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 380075214448226449, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1016471939625415016, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
       propertyPath: sceneViewId
       value: 1
@@ -406,6 +410,10 @@ PrefabInstance:
     - target: {fileID: 4565314798187658049, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6084433658298802738, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
+      propertyPath: ammo
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7074545155026816254, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -450,7 +458,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6340905108394233998, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1339579495}
   m_SourcePrefab: {fileID: 100100000, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
 --- !u!1 &676643756
 GameObject:
@@ -1314,6 +1325,27 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1403817606}
   m_SourcePrefab: {fileID: 100100000, guid: a9197686e17942a40ae35184b52c3f85, type: 3}
+--- !u!1 &1339579491 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6340905108394233998, guid: c36ce629a93d8f64c8c13cd79dd850a9, type: 3}
+  m_PrefabInstance: {fileID: 536669437}
+  m_PrefabAsset: {fileID: 0}
+--- !u!111 &1339579495
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1339579491}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!1 &1359975918 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6809448701839776362, guid: bd9989ee76b19b9439849c38ae68ea9e, type: 3}
@@ -1638,7 +1670,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1883559442
 Transform:
   m_ObjectHideFlags: 0

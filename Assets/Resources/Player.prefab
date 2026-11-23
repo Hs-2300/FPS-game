@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8057381226897814241
 Transform:
   m_ObjectHideFlags: 0
@@ -748,7 +748,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  IsLocalPlayer: 0
+  IsLocalPlayer: 1
   healthText: {fileID: 7173764409574727067}
 --- !u!1 &5228166879783028978
 GameObject:
@@ -950,6 +950,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4836353176015318960}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 477208143666042401}
   m_SourcePrefab: {fileID: 100100000, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
 --- !u!1 &6340905108394233998 stripped
 GameObject:
@@ -977,6 +980,8 @@ MonoBehaviour:
   magAmmo: 30
   magText: {fileID: 7806750226341224360}
   ammoText: {fileID: 8457241697843689855}
+  animation: {fileID: 477208143666042401}
+  reload: {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
 --- !u!114 &4836353176015318960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -991,6 +996,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swayClamp: 0.09
   smoothing: 3
+--- !u!111 &477208143666042401
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6340905108394233998}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!4 &6680169984259000884 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}

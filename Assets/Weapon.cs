@@ -29,6 +29,9 @@ public class Weapon : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI magText;
     public TextMeshProUGUI ammoText;
+    [Header("Animation")]
+    public Animation animation;
+    public AnimationClip reload;
 
     void Start()
     {
@@ -45,7 +48,7 @@ public class Weapon : MonoBehaviour
             nextFire -= Time.deltaTime;
         
         // 按住 Fire1（通常是鼠标左键）且冷却结束时开火。
-        if (Input.GetButton("Fire1") && nextFire <=0 && ammo>0)
+        if (Input.GetButton("Fire1") && nextFire <=0 && ammo>0 && animation.isPlaying == false)
         {
             // 将每秒开火次数换算为两次开火之间的秒数。
             nextFire = 1 /fireRate;
@@ -66,6 +69,7 @@ public class Weapon : MonoBehaviour
     }
     void Reload()
     {
+        animation.Play(reload.name);
         if (mag > 0)
         {
             mag --;
