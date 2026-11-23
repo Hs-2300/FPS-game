@@ -1,6 +1,7 @@
 using System.Collections; // 引入集合相关类型（当前脚本没有直接使用）。
 using System.Collections.Generic; // 引入泛型集合类型（当前脚本没有直接使用）。
 using Photon.Pun; // 提供 PhotonView 和 RpcTarget 等 Photon 网络类型。
+using TMPro;
 using UnityEngine; // 提供 MonoBehaviour、Camera、Ray、Physics 和输入接口。
 
 // 武器组件：读取开火输入，并用射线检测命中目标。
@@ -20,6 +21,21 @@ public class Weapon : MonoBehaviour
     // 距离下一次可开火还剩多少秒。
     private float nextFire;
 
+    [Header("Ammo")]
+    public int mag = 5;//how many magazine we start with
+    public int ammo = 30;
+    public int magAmmo = 30;//amount of ammo in each mag
+
+    [Header("UI")]
+    public TextMeshProUGUI magText;
+    public TextMeshProUGUI ammoText;
+
+    void Start()
+    {
+        magText.text = mag.ToString();
+        ammoText.text = ammo + "/" +magAmmo;
+    }
+    
     // Unity 每帧调用 Update，处理冷却计时和开火输入。
     void Update()
     {
@@ -29,16 +45,38 @@ public class Weapon : MonoBehaviour
             nextFire -= Time.deltaTime;
         
         // 按住 Fire1（通常是鼠标左键）且冷却结束时开火。
-        if (Input.GetButton("Fire1") && nextFire <=0)
+        if (Input.GetButton("Fire1") && nextFire <=0 && ammo>0)
         {
             // 将每秒开火次数换算为两次开火之间的秒数。
             nextFire = 1 /fireRate;
 
+            ammo --;
+
+            magText.text = mag.ToString();
+            ammoText.text = ammo + "/" +magAmmo;
+
             // 执行一次命中检测。
             Fire();
         }
-    }
 
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reload();
+        }
+    }
+    void Reload()
+    {
+        if (mag > 0)
+        {
+            mag --;
+
+            ammo = magAmmo;
+        }
+        magText.text = mag.ToString();
+        ammoText.text = ammo + "/" +magAmmo;
+    }
+    
+    
     // 从摄像机位置沿摄像机正前方发出射线。
     void Fire()
     {
