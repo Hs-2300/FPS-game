@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8057381226897814241
 Transform:
   m_ObjectHideFlags: 0
@@ -981,7 +981,7 @@ MonoBehaviour:
   magText: {fileID: 7806750226341224360}
   ammoText: {fileID: 8457241697843689855}
   animation: {fileID: 477208143666042401}
-  reload: {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  reload: {fileID: 229770723416056496, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
 --- !u!114 &4836353176015318960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1005,9 +1005,9 @@ Animation:
   m_GameObject: {fileID: 6340905108394233998}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  m_Animation: {fileID: 229770723416056496, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
   m_Animations:
-  - {fileID: 7400000, guid: a76e957a14a30e84b892d0dd1b1052ae, type: 2}
+  - {fileID: 229770723416056496, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
   m_WrapMode: 0
   m_PlayAutomatically: 0
   m_AnimatePhysics: 0
