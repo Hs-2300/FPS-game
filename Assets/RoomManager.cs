@@ -6,8 +6,25 @@ using Photon.Realtime;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
+    // 保存当前场景中 RoomManager 的共享引用，供 Health 等脚本通过 RoomManager.instance 访问。
+    public static RoomManager instance;
+    
     public GameObject player;//Object to spawn
+    // 在 Inspector 中为下一个公开字段添加可见间距，不影响运行逻辑。
+    [Space]
     public Transform SpawnPoint;
+    // 再添加一段 Inspector 间距，便于区分出生点和连接画面摄像机。
+    [Space]
+    // 指向进入房间前使用的 RoomCam 游戏对象，由场景中的 Inspector 引用赋值。
+    public GameObject roomCam;
+
+    // Unity 创建并启用此组件时调用 Awake，通常早于 Start。
+    void Awake()
+    {
+        // 将当前组件实例存入静态字段，使其他脚本能找到这个 RoomManager。
+        instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,12 +59,34 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         Debug.Log(message:"We are connected and in a room now.");
 
-        //sync 生成一个Photon 网络对象，其他房间成员也能收到这个对象的生成事件
-        GameObject _player = PhotonNetwork.Instantiate
-        (player.name,   //player.name提供prefab名称，需要Photon能找到
-        SpawnPoint.position,    //生成的时候的世界坐标
-        Quaternion.identity);   //使用默认旋转，不使用额外旋转
-        _player.GetComponent<PlayerSetup>().IsLocalPlayer();//can only be called by local player
+        // 加入房间后关闭等待画面摄像机及其子对象，让玩家摄像机接管画面。
+        roomCam.SetActive(false);
+        
+        // 首次进入房间时生成由本机控制的玩家角色。
+        SpawnPlayer();
     }
+
+    // 生成一个网络玩家，并启用这个客户端对新角色的控制和本地身份标记。
+    public void SpawnPlayer()
+        {
+            //检查1
+            Debug.Log($"SpawnPlayer called: inRoom={PhotonNetwork.InRoom}, prefab={player?.name}, spawnPoint={SpawnPoint?.position}");
+            
+            // PhotonNetwork.Instantiate 会从 Resources 中按预制体名称加载，并同步创建给房间成员。
+            GameObject _player = PhotonNetwork.Instantiate
+            // player.name 是要查找的预制体名称；SpawnPoint.position 是世界坐标出生点；
+            // Quaternion.identity 表示不额外旋转，沿用预制体的默认朝向。
+            (player.name,   //player.name提供prefab名称，需要Photon能找到
+            SpawnPoint.position,    //生成的时候的世界坐标
+            Quaternion.identity);   //使用默认旋转，不使用额外旋转
+
+            //检查2
+            Debug.Log($"SpawnPlayer called: inRoom={PhotonNetwork.InRoom}, prefab={player?.name}, spawnPoint={SpawnPoint?.position}");
+
+            // 获取新角色的 PlayerSetup，启用其移动组件和玩家摄像机。
+            _player.GetComponent<PlayerSetup>().IsLocalPlayer();//can only be called by local player
+            // 将本机新角色的 Health 标为本地角色；后续死亡时据此决定是否触发复活。
+            _player.GetComponent<Health>().IsLocalPlayer = true;
+        }
 
 }

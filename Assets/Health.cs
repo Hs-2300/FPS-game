@@ -11,7 +11,9 @@ public class Health : MonoBehaviour
 {
     // 当前生命值，可在 Unity Inspector 中设置。
     public int health;
-
+    // 标记这个 Health 所属的角色是否由本机玩家控制；public 字段也会出现在 Inspector 中。
+    // 新角色生成时由 RoomManager 设为 true，其他客户端上的同一角色副本保持默认的 false。
+    public bool IsLocalPlayer;
 
     [Header("UI")]
     public TextMeshProUGUI healthText;
@@ -21,13 +23,26 @@ public class Health : MonoBehaviour
     // 接收本次伤害值，并更新生命值。
     public void TakeDamage(int _damage)
     {
+        //检查1
+        Debug.Log($"TakeDamage: object={name}, damage={_damage}, healthBefore={health}, IsLocalPlayer={IsLocalPlayer}, IsMine={GetComponent<PhotonView>().IsMine}");
         // 从当前生命值中扣除传入的伤害值。
         health -= _damage;
         //health转换为string格式
         healthText.text = health.ToString();
+
+        //检查2
+        Debug.Log($"After damage: object={name}, health={health}");
         // 生命值降到零或以下时，执行销毁。
         if (health <= 0)
         {
+            // 只允许本机拥有的阵亡角色触发复活，避免每个客户端都生成一个新玩家。
+            if (IsLocalPlayer)
+            {
+                // 通过静态 instance 找到场景中的 RoomManager，再请求生成新角色。
+                // 注意：当前 RoomManager 只有 SpawnPlayer()，没有 RespawnPlayer()，此处会产生编译错误。
+                RoomManager.instance.SpawnPlayer();
+            }
+            
             // 销毁当前客户端上的这个游戏对象。
             Destroy(gameObject);
         }
