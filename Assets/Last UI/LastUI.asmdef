@@ -1,0 +1,16 @@
+{
+    "name": "LastUI",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "LAST_UI_ENABLED"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
