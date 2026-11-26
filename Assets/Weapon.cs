@@ -20,6 +20,9 @@ public class Weapon : MonoBehaviour
     //命中特效
     [Header("VFX")]
     public GameObject hitVFX;
+    public Transform muzzlePoint;
+    public GameObject muzzleFlash;
+    [Min(0f)] public float muzzleFlashScale = 0.1f;
     // 距离下一次可开火还剩多少秒。
     private float nextFire;
 
@@ -136,6 +139,15 @@ public class Weapon : MonoBehaviour
     // 从摄像机位置沿摄像机正前方发出射线。
     void Fire()
     {
+        if (muzzleFlash != null && muzzlePoint != null)
+        {
+            GameObject flash = Instantiate(muzzleFlash, muzzlePoint.position, muzzlePoint.rotation);
+            flash.transform.localScale *= muzzleFlashScale;
+            foreach (var particle in flash.GetComponentsInChildren<ParticleSystem>())
+                particle.Play();
+            Destroy(flash, 2f);
+        }
+
         // 每次真正开火时启动后坐阶段。
         recoiling = true;
         // 新一发射击会打断此前可能正在进行的回位。

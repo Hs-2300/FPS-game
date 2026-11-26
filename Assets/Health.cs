@@ -41,10 +41,9 @@ public class Health : MonoBehaviour
                 // 通过静态 instance 找到场景中的 RoomManager，再请求生成新角色。
                 // 注意：当前 RoomManager 只有 SpawnPlayer()，没有 RespawnPlayer()，此处会产生编译错误。
                 RoomManager.instance.SpawnPlayer();
+                // 销毁当前客户端上的这个游戏对象。
+                PhotonNetwork.Destroy(gameObject);
             }
-            
-            // 销毁当前客户端上的这个游戏对象。
-            Destroy(gameObject);
         }
 
     }
