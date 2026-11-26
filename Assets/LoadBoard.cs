@@ -20,6 +20,7 @@ public class LoadBoard : MonoBehaviour
     [Space]
     public TextMeshProUGUI[] scoreText;
     public TextMeshProUGUI[] nameText;
+    public TextMeshProUGUI[] KDText;
 
     private void Start()
     {
@@ -48,6 +49,15 @@ public class LoadBoard : MonoBehaviour
 
             nameText[i].text = player.NickName;
             scoreText[i].text = player.GetScore().ToString();
+
+            if (player.CustomProperties["kills"] != null)
+            {
+                KDText[i].text = player.CustomProperties["kills"] +"/" +player.CustomProperties["deaths"];
+            }
+            else
+            {
+                KDText[i].text = "0/0";
+            }
 
             i++;
 

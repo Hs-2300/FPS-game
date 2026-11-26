@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;//
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -23,6 +24,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public GameObject connectingUI;
 
     private string nickname = "Unnamed";
+
+    public string roomNameToJoin = "Test";
+
+    [HideInInspector]
+    public int kills = 0;
+    public int deaths = 0;
 
 
     // Unity 创建并启用此组件时调用 Awake，通常早于 Start。
@@ -106,5 +113,22 @@ public class RoomManager : MonoBehaviourPunCallbacks
             _player.GetComponent<PhotonView>().RPC(methodName:"SetNickName", RpcTarget.AllBuffered, nickname);
             PhotonNetwork.LocalPlayer.NickName = nickname;
         }
+
+        public void SetHashes()
+    {
+        try
+        {
+            Hashtable hash = PhotonNetwork.LocalPlayer.CustomProperties;
+
+            hash["kills"] = kills;
+            hash["deaths"] = deaths;
+
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
+        catch
+        {
+            //Do nothing
+        }
+    }
 
 }

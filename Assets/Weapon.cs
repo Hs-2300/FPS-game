@@ -177,9 +177,11 @@ public class Weapon : MonoBehaviour
             if (hit.transform.gameObject.GetComponent<Health>())
             {
                 PhotonNetwork.LocalPlayer.AddScore(damage);
-                if (damage > hit.transform.gameObject.GetComponent<Health>().health)
+                if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
                 {
                     //kill
+                    RoomManager.instance.kills ++;//increase kill by 1
+                    RoomManager.instance.SetHashes();//sync
                     PhotonNetwork.LocalPlayer.AddScore(100);
                 }
                 // 对命中对象的 PhotonView 向所有客户端发送 TakeDamage RPC。

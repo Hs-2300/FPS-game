@@ -4,6 +4,7 @@ using Photon.Pun.Demo.Cockpit;
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
+using Hashtable = ExitGames.Client.Photon.Hashtable;//
 
 public class PlayerSetup : MonoBehaviour
 {
@@ -28,4 +29,6 @@ public class PlayerSetup : MonoBehaviour
 
         nicknameText.text = nickname;
     }
+
+    
 }
