@@ -1,6 +1,7 @@
 using System.Collections; // 引入集合相关类型（当前脚本没有直接使用）。
 using System.Collections.Generic; // 引入泛型集合类型（当前脚本没有直接使用）。
 using Photon.Pun; // 提供 PhotonView 和 RpcTarget 等 Photon 网络类型。
+using Photon.Pun.UtilityScripts;
 using TMPro;
 using Unity.VisualScripting; // 当前脚本没有直接使用此命名空间中的类型。
 using UnityEngine; // 提供 MonoBehaviour、Camera、Ray、Physics 和输入接口。
@@ -148,6 +149,9 @@ public class Weapon : MonoBehaviour
         // 用于保存射线命中的对象、位置等信息。
         RaycastHit hit;
 
+        //Every time you fire get 1 pt
+        PhotonNetwork.LocalPlayer.AddScore(1);
+
         // 在射线前方 100 个 Unity 单位内检测碰撞。
         if (Physics.Raycast(
             ray.origin,
@@ -160,6 +164,12 @@ public class Weapon : MonoBehaviour
             // 只处理命中对象本身带有 Health 组件的情况。
             if (hit.transform.gameObject.GetComponent<Health>())
             {
+                PhotonNetwork.LocalPlayer.AddScore(damage);
+                if (damage > hit.transform.gameObject.GetComponent<Health>().health)
+                {
+                    //kill
+                    PhotonNetwork.LocalPlayer.AddScore(100);
+                }
                 // 对命中对象的 PhotonView 向所有客户端发送 TakeDamage RPC。
                 hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage",RpcTarget.All,damage);
             }

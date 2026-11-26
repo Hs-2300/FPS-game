@@ -104,6 +104,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
             // 将本机新角色的 Health 标为本地角色；后续死亡时据此决定是否触发复活。
             _player.GetComponent<Health>().IsLocalPlayer = true;
             _player.GetComponent<PhotonView>().RPC(methodName:"SetNickName", RpcTarget.AllBuffered, nickname);
+            PhotonNetwork.LocalPlayer.NickName = nickname;
         }
 
 }
