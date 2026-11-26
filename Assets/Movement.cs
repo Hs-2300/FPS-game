@@ -17,6 +17,11 @@ public class Movement : MonoBehaviour
     private bool Jumping;
     private bool grounded = false;
 
+    [Header("Animation")]
+    public Animation handAnimation;
+    public AnimationClip handWalkAnimation;
+    public AnimationClip idleAnimation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -57,11 +62,16 @@ public class Movement : MonoBehaviour
             }
             else if (input.magnitude > 0.5)//没有跳跃有移动
             {
+                handAnimation.clip = handWalkAnimation;
+                handAnimation.Play();
                 //这个语法，满足条件就case1否则case2.Bool condition?Case 1:Case2
                 rb.AddForce(CalculateMovement(Sprinting?SprintSpeed:walkSpeed), ForceMode.VelocityChange);
             }
             else//无跳跃无移动
             {
+                handAnimation.clip = idleAnimation;
+                handAnimation.Play();
+
                 var velocity1 = rb.velocity;
                 velocity1 = new Vector3(
                     x:velocity1.x * 0.2f * Time.fixedDeltaTime,
