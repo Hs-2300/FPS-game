@@ -3,8 +3,9 @@ using System.Collections.Generic; // 引入泛型集合类型（当前脚本没�
 using UnityEngine; // 提供 MonoBehaviour、GameObject 等 Unity 类型。
 using Photon.Pun;
 using Unity.VisualScripting; // 提供 PunRPC 特性，用于标记可通过 Photon RPC 调用的方法。
-
+using UnityEngine.UI;
 using TMPro;
+using JetBrains.Annotations;
 
 // 角色生命值组件，挂在可受伤的游戏对象上。
 public class Health : MonoBehaviour
@@ -14,6 +15,19 @@ public class Health : MonoBehaviour
     // 标记这个 Health 所属的角色是否由本机玩家控制；public 字段也会出现在 Inspector 中。
     // 新角色生成时由 RoomManager 设为 true，其他客户端上的同一角色副本保持默认的 false。
     public bool IsLocalPlayer;
+
+    public RectTransform healthBar;
+    private float originalHealthBarSize;
+
+    private void Start()
+    {
+        originalHealthBarSize = healthBar.sizeDelta.x;
+    }
+
+    private void Update()
+    {
+        // healthBar.sizeDelta = new Vector2(x:originalHealthBarSize * health /100f,y:healthBar.sizeDelta.y);
+    }
 
     [Header("UI")]
     public TextMeshProUGUI healthText;
@@ -27,6 +41,8 @@ public class Health : MonoBehaviour
         Debug.Log($"TakeDamage: object={name}, damage={_damage}, healthBefore={health}, IsLocalPlayer={IsLocalPlayer}, IsMine={GetComponent<PhotonView>().IsMine}");
         // 从当前生命值中扣除传入的伤害值。
         health -= _damage;
+        healthBar.sizeDelta = new Vector2(x:originalHealthBarSize * health /100f,y:healthBar.sizeDelta.y);
+
         //health转换为string格式
         healthText.text = health.ToString();
 
