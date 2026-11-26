@@ -1,8 +1,11 @@
 using System.Collections;
+using Photon.Pun;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
 {
+    public PhotonView playerSetupView;
+
     public AnimationClip holster;
     public AnimationClip draw;
     
@@ -33,34 +36,34 @@ public class WeaponSwitcher : MonoBehaviour
         {
             selectedWeapon = 1;
         }
-        if(Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            selectedWeapon = 2;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            selectedWeapon = 3;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            selectedWeapon = 4;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            selectedWeapon = 5;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            selectedWeapon = 6;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            selectedWeapon = 7;
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            selectedWeapon = 8;
-        }
+        // if(Input.GetKeyDown(KeyCode.Alpha3))
+        // {
+        //     selectedWeapon = 2;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha4))
+        // {
+        //     selectedWeapon = 3;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha5))
+        // {
+        //     selectedWeapon = 4;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha6))
+        // {
+        //     selectedWeapon = 5;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha7))
+        // {
+        //     selectedWeapon = 6;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha8))
+        // {
+        //     selectedWeapon = 7;
+        // }
+        // if(Input.GetKeyDown(KeyCode.Alpha9))
+        // {
+        //     selectedWeapon = 8;
+        // }
        
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
@@ -148,6 +151,11 @@ public class WeaponSwitcher : MonoBehaviour
         if (selectedWeapon >= transform.childCount)
         {
             selectedWeapon = transform.childCount -1;
+        }
+
+        if (playerSetupView != null && playerSetupView.IsMine)
+        {
+            playerSetupView.RPC("SetTPWeapon", RpcTarget.AllBuffered, selectedWeapon);
         }
         
         int i = 0;
