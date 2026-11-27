@@ -31,6 +31,10 @@ public class Weapon : MonoBehaviour
     public int ammo = 30;
     public int magAmmo = 30;//amount of ammo in each mag
 
+    [Header("SFX")]
+    public int shootSFXIndex;
+    public PlayerPhotonSoundManager playerPhotonSoundManager;
+    
     [Header("UI")]
     public TextMeshProUGUI magText;
     public TextMeshProUGUI ammoText;
@@ -152,6 +156,8 @@ public class Weapon : MonoBehaviour
         recoiling = true;
         // 新一发射击会打断此前可能正在进行的回位。
         recovering = false;
+        
+        playerPhotonSoundManager.PlayShootSFX(shootSFXIndex);
         
         // 构造射线：起点是摄像机位置，方向是摄像机朝向。
         Ray ray = new Ray(

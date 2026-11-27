@@ -43,6 +43,9 @@ MonoBehaviour:
   - TakeDamage
   - SetNickName
   - SetTPWeapon
+  - PlayFootSstepSFX_RPC
+  - PlayFootStep_RPC
+  - PlayShootSFX_RPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
