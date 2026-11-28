@@ -34,13 +34,26 @@ public class Weapon : MonoBehaviour
     [Header("SFX")]
     public int shootSFXIndex;
     public PlayerPhotonSoundManager playerPhotonSoundManager;
+    public bool shootSoundFromAnimationEvent;
     
     [Header("UI")]
     public TextMeshProUGUI magText;
     public TextMeshProUGUI ammoText;
     [Header("Animation")]
     public Animation animation;
-    public AnimationClip reload;
+    public AnimationClip[] drawClips;
+    public AnimationClip[] holsterClips;
+    public AnimationClip[] fireClips;
+    public AnimationClip[] reloadClips;
+
+    [Header("Animation Event Sounds")]
+    public AudioSource actionSoundSource;
+    public AudioClip[] actionSounds;
+
+    private Coroutine currentAction;
+    private bool reloading;
+    private bool actionPlaying;
+    public bool IsPlayingFire { get; private set; }
 
     // 在 Inspector 中将下面的后坐力参数归入“Recoil Settings”标题。
     [Header("Recoil Settings")]
@@ -75,8 +88,7 @@ public class Weapon : MonoBehaviour
 
     void Start()
     {
-        magText.text = mag.ToString();
-        ammoText.text = ammo + "/" +magAmmo;
+        RefreshAmmoUI();
 
         // 使用局部位置，因为后续修改的也是 transform.localPosition。
         originalPosition = transform.localPosition;
@@ -90,59 +102,144 @@ public class Weapon : MonoBehaviour
     // Unity 每帧调用 Update，处理冷却计时和开火输入。
     void Update()
     {
+        PhotonView ownerView = GetComponentInParent<PhotonView>();
+        if (ownerView != null && !ownerView.IsMine) return;
         // 冷却尚未结束时，按本帧耗时递减。
         if (nextFire > 0)
             // Time.deltaTime 是上一帧到当前帧的时间间隔。
             nextFire -= Time.deltaTime;
         
         // 按住 Fire1（通常是鼠标左键）且冷却结束时开火。
-        if (Input.GetButton("Fire1") && nextFire <=0 && ammo>0 && animation.isPlaying == false)
+        if (Input.GetButton("Fire1") && nextFire <=0 && ammo>0 && !reloading &&
+            !actionPlaying && (animation == null || !animation.isPlaying))
         {
             // 将每秒开火次数换算为两次开火之间的秒数。
-            nextFire = 1 /fireRate;
+            nextFire = fireRate > 0f ? 1f / fireRate : 0f;
 
             ammo --;
 
-            magText.text = mag.ToString();
-            ammoText.text = ammo + "/" +magAmmo;
+            RefreshAmmoUI();
 
             // 执行一次命中检测。
             Fire();
         }
 
         // 本帧按下 R 且备用弹匣数不是负数时，调用换弹方法。
-        if (Input.GetKeyDown(KeyCode.R) && mag >= 0)
+        if (Input.GetKeyDown(KeyCode.R) && mag > 0 && !reloading && !actionPlaying)
         {
             Reload();
         }
         // 处于后坐阶段时，每帧向后坐目标移动。
-        if (recoiling)
-        {
-            Recoil();
-        }
-        // 处于回位阶段时，每帧向初始位置移动。
-        if (recovering)
-        {
-            Recovering();
-        }
+        // 暂停代码后坐力：当前由各武器的 Fire 动画表现后坐与回位。
+        // if (recoiling) Recoil();
+        // if (recovering) Recovering();
     }
     void Reload()
     {
-        animation.Play(reload.name);
-        if (mag > 0)
-        {
-            mag --;
+        currentAction = StartCoroutine(ReloadAction());
+    }
 
-            ammo = magAmmo;
+    private IEnumerator ReloadAction()
+    {
+        reloading = true;
+        yield return PlaySequence(reloadClips);
+
+        mag--;
+        ammo = magAmmo;
+        RefreshAmmoUI();
+        reloading = false;
+        currentAction = null;
+    }
+
+    public void CancelAction()
+    {
+        if (currentAction != null) StopCoroutine(currentAction);
+        currentAction = null;
+        reloading = false;
+        actionPlaying = false;
+        IsPlayingFire = false;
+        if (animation != null) animation.Stop();
+    }
+
+    // The ammo values belong to this Weapon instance; the HUD shows only the selected one.
+    public void RefreshAmmoUI()
+    {
+        if (magText != null) magText.text = mag.ToString();
+        if (ammoText != null) ammoText.text = ammo + "/" + magAmmo;
+    }
+
+    public IEnumerator PlayDraw() { return PlaySequence(drawClips); }
+    public IEnumerator PlayHolster() { return PlaySequence(holsterClips); }
+
+    private IEnumerator PlayFireSequence()
+    {
+        IsPlayingFire = true;
+        float totalLength = 0f;
+        foreach (AnimationClip clip in fireClips)
+            if (clip != null && clip.legacy) totalLength += clip.length;
+
+        float interval = fireRate > 0f ? 1f / fireRate : 0f;
+        float playbackSpeed = interval > 0f && totalLength > interval
+            ? totalLength / interval
+            : 1f;
+        yield return PlaySequence(fireClips, playbackSpeed);
+        IsPlayingFire = false;
+    }
+
+    private IEnumerator PlaySequence(AnimationClip[] clips, float playbackSpeed = 1f)
+    {
+        if (animation == null || clips == null) yield break;
+
+        actionPlaying = true;
+        foreach (AnimationClip clip in clips)
+        {
+            if (clip == null) continue;
+            if (!clip.legacy)
+            {
+                Debug.LogWarning($"{name}: {clip.name} must be Legacy to play with Animation.", this);
+                continue;
+            }
+            if (animation.GetClip(clip.name) == null) animation.AddClip(clip, clip.name);
+            animation[clip.name].wrapMode = WrapMode.Once;
+            animation[clip.name].speed = playbackSpeed;
+            if (!animation.Play(clip.name))
+            {
+                Debug.LogWarning($"{name}: could not play {clip.name}.", this);
+                continue;
+            }
+            while (animation.IsPlaying(clip.name)) yield return null;
         }
-        magText.text = mag.ToString();
-        ammoText.text = ammo + "/" +magAmmo;
+        actionPlaying = false;
+    }
+
+    // Animation Events on this weapon can select a sound configured on this instance.
+    public void PlayActionSound(int index)
+    {
+        if (actionSoundSource == null || actionSounds == null || index < 0 || index >= actionSounds.Length || actionSounds[index] == null)
+        {
+            Debug.LogWarning($"{name}: action sound {index} is not configured.", this);
+            return;
+        }
+        actionSoundSource.PlayOneShot(actionSounds[index]);
+    }
+
+    // Put this event on the firing clip when its sound must match a specific frame.
+    public void PlayShootSound()
+    {
+        if (playerPhotonSoundManager != null)
+            playerPhotonSoundManager.PlayShootSFX(shootSFXIndex);
     }
     
     
     // 从摄像机位置沿摄像机正前方发出射线。
     void Fire()
     {
+        if (fireClips != null && fireClips.Length > 0)
+        {
+            Movement movement = GetComponentInParent<Movement>();
+            if (movement != null) movement.StopHandAnimationForFire();
+            currentAction = StartCoroutine(PlayFireSequence());
+        }
         if (muzzleFlash != null && muzzlePoint != null)
         {
             GameObject flash = Instantiate(muzzleFlash, muzzlePoint.position, muzzlePoint.rotation);
@@ -153,11 +250,11 @@ public class Weapon : MonoBehaviour
         }
 
         // 每次真正开火时启动后坐阶段。
-        recoiling = true;
+        // recoiling = true;
         // 新一发射击会打断此前可能正在进行的回位。
-        recovering = false;
+        // recovering = false;
         
-        playerPhotonSoundManager.PlayShootSFX(shootSFXIndex);
+        if (!shootSoundFromAnimationEvent) PlayShootSound();
         
         // 构造射线：起点是摄像机位置，方向是摄像机朝向。
         Ray ray = new Ray(

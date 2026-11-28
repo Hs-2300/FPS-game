@@ -16,16 +16,28 @@ public class Movement : MonoBehaviour
     private bool Sprinting;
     private bool Jumping;
     private bool grounded = false;
+    private bool groundedThisStep;
+    private WeaponSwitcher weaponSwitcher;
+    private bool wasPlayingFire;
+    private bool IsPlayingFire => weaponSwitcher != null && weaponSwitcher.CurrentWeapon != null && weaponSwitcher.CurrentWeapon.IsPlayingFire;
+    public bool CanPlayFootstep => groundedThisStep && input.sqrMagnitude > 0.25f && !IsPlayingFire;
 
     [Header("Animation")]
     public Animation handAnimation;
     public AnimationClip handWalkAnimation;
     public AnimationClip idleAnimation;
 
+    public void StopHandAnimationForFire()
+    {
+        if (handAnimation != null) handAnimation.Stop();
+        wasPlayingFire = true;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        if (handAnimation != null) weaponSwitcher = handAnimation.GetComponent<WeaponSwitcher>();
     }
 
     // Update is called once per frame
@@ -52,25 +64,36 @@ public class Movement : MonoBehaviour
     }
     void FixedUpdate()//Called by Unity everytime there is a physics Update, 固定步长
     {
+        groundedThisStep = grounded;
+        bool playingFire = IsPlayingFire;
+        if (playingFire && !wasPlayingFire && handAnimation != null) handAnimation.Stop();
+        wasPlayingFire = playingFire;
         if (grounded)
         {   
             if (Jumping)//优先跳跃
             {
+               groundedThisStep = false;
                rb.velocity = new Vector3(rb.velocity.x, 
                 JumpHeight, 
                 rb.velocity.z);
             }
             else if (input.magnitude > 0.5)//没有跳跃有移动
             {
-                handAnimation.clip = handWalkAnimation;
-                handAnimation.Play();
+                if (!playingFire && handAnimation != null && handWalkAnimation != null)
+                {
+                    handAnimation.clip = handWalkAnimation;
+                    handAnimation.Play();
+                }
                 //这个语法，满足条件就case1否则case2.Bool condition?Case 1:Case2
                 rb.AddForce(CalculateMovement(Sprinting?SprintSpeed:walkSpeed), ForceMode.VelocityChange);
             }
             else//无跳跃无移动
             {
-                handAnimation.clip = idleAnimation;
-                handAnimation.Play();
+                if (!playingFire && handAnimation != null && idleAnimation != null)
+                {
+                    handAnimation.clip = idleAnimation;
+                    handAnimation.Play();
+                }
 
                 var velocity1 = rb.velocity;
                 velocity1 = new Vector3(
@@ -82,11 +105,17 @@ public class Movement : MonoBehaviour
         }
         else
         {
+            // 离地后停止带脚步事件的 walk 动画。
+            if (!playingFire && handAnimation != null && idleAnimation != null && handAnimation.clip != idleAnimation)
+            {
+                handAnimation.clip = idleAnimation;
+                handAnimation.Play();
+            }
             if (input.magnitude > 0.5)//没有跳跃有移动
             {
                 //这个语法，满足条件就case1否则case2.Bool condition?Case 1:Case2
                 rb.AddForce(
-                    CalculateMovement(Sprinting?SprintSpeed:walkSpeed * aircontrol), 
+                    CalculateMovement(walkSpeed * aircontrol),
                     ForceMode.VelocityChange);
             }
             else//无跳跃无移动

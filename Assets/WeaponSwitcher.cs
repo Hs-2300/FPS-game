@@ -6,9 +6,6 @@ public class WeaponSwitcher : MonoBehaviour
 {
     public PhotonView playerSetupView;
 
-    public AnimationClip holster;
-    public AnimationClip draw;
-    
     private int selectedWeapon = 0;
     private bool isSwitching;
  
@@ -21,49 +18,18 @@ public class WeaponSwitcher : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isSwitching || transform.childCount == 0)
+        if ((playerSetupView != null && !playerSetupView.IsMine) || isSwitching || transform.childCount == 0)
         {
             return;
         }
 
         int previousSelectedWeapon = selectedWeapon;
 
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        for (int i = 0; i < Mathf.Min(transform.childCount, 9); i++)
         {
-            selectedWeapon = 0;
+            if (Input.GetKeyDown((KeyCode)((int)KeyCode.Alpha1 + i)))
+                selectedWeapon = i;
         }
-        if(Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            selectedWeapon = 1;
-        }
-        // if(Input.GetKeyDown(KeyCode.Alpha3))
-        // {
-        //     selectedWeapon = 2;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha4))
-        // {
-        //     selectedWeapon = 3;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha5))
-        // {
-        //     selectedWeapon = 4;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha6))
-        // {
-        //     selectedWeapon = 5;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha7))
-        // {
-        //     selectedWeapon = 6;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha8))
-        // {
-        //     selectedWeapon = 7;
-        // }
-        // if(Input.GetKeyDown(KeyCode.Alpha9))
-        // {
-        //     selectedWeapon = 8;
-        // }
        
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
@@ -107,38 +73,19 @@ public class WeaponSwitcher : MonoBehaviour
     {
         isSwitching = true;
 
-        Animation oldAnimation = transform.GetChild(previousWeapon).GetComponent<Animation>();
-        yield return PlayWeaponAnimation(oldAnimation, holster);
+        Weapon oldWeapon = transform.GetChild(previousWeapon).GetComponent<Weapon>();
+        if (oldWeapon != null)
+        {
+            oldWeapon.CancelAction();
+            yield return oldWeapon.PlayHolster();
+        }
 
         SelectWeapon();
 
-        Animation newAnimation = transform.GetChild(selectedWeapon).GetComponent<Animation>();
-        yield return PlayWeaponAnimation(newAnimation, draw);
+        Weapon newWeapon = transform.GetChild(selectedWeapon).GetComponent<Weapon>();
+        if (newWeapon != null) yield return newWeapon.PlayDraw();
 
         isSwitching = false;
-    }
-
-    IEnumerator PlayWeaponAnimation(Animation weaponAnimation, AnimationClip clip)
-    {
-        if (weaponAnimation == null || clip == null)
-        {
-            yield break;
-        }
-
-        if (weaponAnimation.GetClip(clip.name) == null)
-        {
-            weaponAnimation.AddClip(clip, clip.name);
-        }
-
-        weaponAnimation[clip.name].wrapMode = WrapMode.Once;
-        weaponAnimation.Stop();
-        if (weaponAnimation.Play(clip.name))
-        {
-            while (weaponAnimation.IsPlaying(clip.name))
-            {
-                yield return null;
-            }
-        }
     }
 
     void SelectWeapon()
@@ -172,5 +119,12 @@ public class WeaponSwitcher : MonoBehaviour
             }
             i++;
         }
+
+        Weapon currentWeapon = CurrentWeapon;
+        if (currentWeapon != null) currentWeapon.RefreshAmmoUI();
     }
+
+    public Weapon CurrentWeapon => transform.childCount > selectedWeapon
+        ? transform.GetChild(selectedWeapon).GetComponent<Weapon>()
+        : null;
 }

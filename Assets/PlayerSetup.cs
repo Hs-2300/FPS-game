@@ -29,7 +29,7 @@ public class PlayerSetup : MonoBehaviour
     [PunRPC]
     public void SetTPWeapon(int _weaponIndex)
     {
-        if (TPweaponHolder == null || _weaponIndex < 0 || _weaponIndex >= TPweaponHolder.childCount)
+        if (TPweaponHolder == null)
         {
             return;
         }
@@ -39,7 +39,8 @@ public class PlayerSetup : MonoBehaviour
             _weapon.gameObject.SetActive(false);
         }
 
-        TPweaponHolder.GetChild(_weaponIndex).gameObject.SetActive(true);
+        if (_weaponIndex >= 0 && _weaponIndex < TPweaponHolder.childCount)
+            TPweaponHolder.GetChild(_weaponIndex).gameObject.SetActive(true);
     }
 
     [PunRPC]
