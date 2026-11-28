@@ -2375,6 +2375,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 25
+  pelletCount: 1
+  sprayMultiplier: 0.05
   camera: {fileID: 6762145813167466034}
   fireRate: 10
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}
@@ -2544,6 +2546,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 90
+  pelletCount: 1
+  sprayMultiplier: 0
   camera: {fileID: 6762145813167466034}
   fireRate: 1
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}
@@ -2990,6 +2994,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 25
+  pelletCount: 1
+  sprayMultiplier: 0
   camera: {fileID: 1024424660975000802}
   fireRate: 10
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}
@@ -3430,6 +3436,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 25
+  pelletCount: 1
+  sprayMultiplier: 0
   camera: {fileID: 6762145813167466034}
   fireRate: 10
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}
@@ -3551,6 +3559,10 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8039510782566667567, guid: 06fa9dedac221384b840ce29aebb16d5, type: 3}
       propertyPath: m_Layer
@@ -3867,6 +3879,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 25
+  pelletCount: 1
+  sprayMultiplier: 0.1
   camera: {fileID: 1024424660975000802}
   fireRate: 10
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}
@@ -4035,7 +4049,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72453fd5afbb78641a47c5305dc9228c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 90
+  damage: 12
+  pelletCount: 8
+  sprayMultiplier: 0.5
   camera: {fileID: 6762145813167466034}
   fireRate: 1
   hitVFX: {fileID: 851390242896032332, guid: 650ca380712dee945b4f7a9908f809fd, type: 3}

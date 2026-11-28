@@ -11,6 +11,8 @@ public class Weapon : MonoBehaviour
 {
     // 每次命中造成的伤害值。
     public int damage;
+    public int pelletCount = 1;
+    public float sprayMultiplier = 0;
 
     // 发射射线所依据的摄像机。
     public Camera camera;
@@ -256,41 +258,49 @@ public class Weapon : MonoBehaviour
         
         if (!shootSoundFromAnimationEvent) PlayShootSound();
         
-        // 构造射线：起点是摄像机位置，方向是摄像机朝向。
-        Ray ray = new Ray(
-            origin:camera.transform.position, 
-            direction:camera.transform.forward);
-
-        // 用于保存射线命中的对象、位置等信息。
-        RaycastHit hit;
-
-        //Every time you fire get 1 pt
-        PhotonNetwork.LocalPlayer.AddScore(1);
-
-        // 在射线前方 100 个 Unity 单位内检测碰撞。
-        if (Physics.Raycast(
-            ray.origin,
-            ray.direction,
-            out hit,
-            maxDistance: 100f))
+        for (int i = 0;i<pelletCount;i++)
         {
-            //射线命中的位置，生成一个所有房间玩家都能看到的命中特效
-            PhotonNetwork.Instantiate(hitVFX.name,hit.point,Quaternion.identity);
-            // 只处理命中对象本身带有 Health 组件的情况。
-            if (hit.transform.gameObject.GetComponent<Health>())
+            Vector3 sprayOffset = Random.insideUnitCircle * sprayMultiplier;
+            sprayOffset.z =0;
+            
+            // 构造射线：起点是摄像机位置，方向是摄像机朝向。
+            Ray ray = new Ray(
+                origin:camera.transform.position, 
+                direction:camera.transform.forward + sprayOffset);
+
+            // 用于保存射线命中的对象、位置等信息。
+            RaycastHit hit;
+
+            //Every time you fire get 1 pt
+            PhotonNetwork.LocalPlayer.AddScore(1);
+
+            // 在射线前方 100 个 Unity 单位内检测碰撞。
+            if (Physics.Raycast(
+                ray.origin,
+                ray.direction,
+                out hit,
+                maxDistance: 100f))
             {
-                PhotonNetwork.LocalPlayer.AddScore(damage);
-                if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                //射线命中的位置，生成一个所有房间玩家都能看到的命中特效
+                PhotonNetwork.Instantiate(hitVFX.name,hit.point,Quaternion.identity);
+                // 只处理命中对象本身带有 Health 组件的情况。
+                if (hit.transform.gameObject.GetComponent<Health>())
                 {
-                    //kill
-                    RoomManager.instance.kills ++;//increase kill by 1
-                    RoomManager.instance.SetHashes();//sync
-                    PhotonNetwork.LocalPlayer.AddScore(100);
+                    PhotonNetwork.LocalPlayer.AddScore(damage);
+                    if (damage >= hit.transform.gameObject.GetComponent<Health>().health)
+                    {
+                        //kill
+                        RoomManager.instance.kills ++;//increase kill by 1
+                        RoomManager.instance.SetHashes();//sync
+                        PhotonNetwork.LocalPlayer.AddScore(100);
+                    }
+                    // 对命中对象的 PhotonView 向所有客户端发送 TakeDamage RPC。
+                    hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage",RpcTarget.All,damage);
                 }
-                // 对命中对象的 PhotonView 向所有客户端发送 TakeDamage RPC。
-                hit.transform.gameObject.GetComponent<PhotonView>().RPC("TakeDamage",RpcTarget.All,damage);
             }
         }
+        
+        
     }
 
     // 计算本次后坐的目标位置，并让枪向该位置移动。

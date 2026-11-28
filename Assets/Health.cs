@@ -32,11 +32,16 @@ public class Health : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI healthText;
 
+    private bool hasDied;
+
     // 允许 Photon 通过 RPC 调用下面的 TakeDamage 方法。
     [PunRPC]
     // 接收本次伤害值，并更新生命值。
     public void TakeDamage(int _damage)
     {
+        if (hasDied)
+            return;
+        
         //检查1
         Debug.Log($"TakeDamage: object={name}, damage={_damage}, healthBefore={health}, IsLocalPlayer={IsLocalPlayer}, IsMine={GetComponent<PhotonView>().IsMine}");
         // 从当前生命值中扣除传入的伤害值。
@@ -51,6 +56,8 @@ public class Health : MonoBehaviour
         // 生命值降到零或以下时，执行销毁。
         if (health <= 0)
         {
+            hasDied = true;
+            
             // 只允许本机拥有的阵亡角色触发复活，避免每个客户端都生成一个新玩家。
             if (IsLocalPlayer)
             {
